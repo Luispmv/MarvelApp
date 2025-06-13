@@ -1,10 +1,11 @@
+import { useNavigation } from "@react-navigation/native";
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 
 
 export default function LoginScreen(){
     return(
-        <ScrollView style={{backgroundColor:"#242121", height:1100}}>
+        <ScrollView style={{backgroundColor:"#242121"}}>
             <ImagenSesionRegistro url={"https://i.pinimg.com/564x/59/14/ab/5914ab799cd22252546c0c372d93c77c.jpg"}></ImagenSesionRegistro>
             <FormularioInicioSesion></FormularioInicioSesion>
         </ScrollView>
@@ -36,6 +37,9 @@ const estilosImagen = StyleSheet.create({
 
 // Formulario de Inicio de Sesion
 function FormularioInicioSesion(){
+
+    const navegacion = useNavigation()
+
     return(
         <View style={form.container}>
             <View style={form.contenedorInputs}>
@@ -48,7 +52,11 @@ function FormularioInicioSesion(){
                 <TouchableOpacity style={form.botonInicioSesion}>
                     <Text style={form.botonInicioSesionTexto}>Iniciar Sesion</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={form.botonRegistro}>
+                <TouchableOpacity style={form.botonRegistro}
+                    onPress={()=>{
+                        navegacion.navigate("RegistroScreen")
+                    }}
+                >
                     <Text style={form.botonRegistroTexto}>Registrate</Text>
                 </TouchableOpacity>
             </View>
