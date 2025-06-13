@@ -1,6 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
 
 
 export default function LoginScreen(){
@@ -38,18 +40,44 @@ const estilosImagen = StyleSheet.create({
 // Formulario de Inicio de Sesion
 function FormularioInicioSesion(){
 
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+  
+
     const navegacion = useNavigation()
+
+    useEffect(()=>{
+        const unsubscribe = auth.onAuthStateChanged(user =>{
+            if(user){
+                navegacion.replace("HomeScreen")
+            }
+        })
+
+        return unsubscribe
+    }, [])  
+
+
+    const handleLogin = ()=>{
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("Logged in with:", user.email);
+        })
+        .catch((error) => {
+        alert(error.message);
+        });
+    }
 
     return(
         <View style={form.container}>
             <View style={form.contenedorInputs}>
                 <Text style={form.titulo}>Iniciar Sesion</Text>
-                <TextInput style={form.inputEmail} placeholder="Coloca tu email" placeholderTextColor={"#929090"}></TextInput>
-                <TextInput style={form.inputContraseña} placeholder="Coloca tu contraseña" placeholderTextColor={"#929090"} secureTextEntry></TextInput>
+                <TextInput style={form.inputEmail} placeholder="Coloca tu email" placeholderTextColor={"#929090"} value={email} onChangeText={text=> setEmail(text)}></TextInput>
+                <TextInput style={form.inputContraseña} placeholder="Coloca tu contraseña" placeholderTextColor={"#929090"} secureTextEntry value={password} onChangeText={text=> setPassword(text)}></TextInput>
             </View>
 
             <View style={form.contendorBotones}> 
-                <TouchableOpacity style={form.botonInicioSesion}>
+                <TouchableOpacity style={form.botonInicioSesion} onPress={handleLogin}>
                     <Text style={form.botonInicioSesionTexto}>Iniciar Sesion</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={form.botonRegistro}
