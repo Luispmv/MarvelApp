@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 
@@ -122,7 +122,8 @@ const form = StyleSheet.create({
         paddingRight: 10,
         textAlign:"center",
         fontSize: 20,
-        alignSelf:"center"
+        alignSelf:"center",
+        color:"white"
     },
     inputContraseña:{
         height:60,
@@ -135,7 +136,8 @@ const form = StyleSheet.create({
         paddingRight: 10,
         textAlign:"center",
         fontSize: 20,
-        alignSelf:"center"
+        alignSelf:"center",
+        color:"white"
     },
     contendorBotones:{
         display:"flex",
