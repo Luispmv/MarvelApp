@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator } from "react-native";
 import { auth } from '../../firebase';
 import { useEffect, useState } from "react";
 
@@ -53,21 +53,80 @@ const saludo = StyleSheet.create({
 })
 
 
-// Seccion de comics
-function ComicSection(){
-    return(
-        <View style={comicSection.contenedor}> 
-            <Text style={comicSection.titulo}>Comics</Text>
-            <ScrollView horizontal={true} style={comicSection.comicContainer}>
-                {/* En este View se cargaran las imagenes de los comics de la api */}
-                <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-                <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-                <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-                <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-                <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-            </ScrollView>
-        </View>
-    )
+//Seccion de comics
+// function ComicSection(){
+//     return(
+//         <View style={comicSection.contenedor}> 
+//             <Text style={comicSection.titulo}>Comics</Text>
+//             <ScrollView horizontal={true} style={comicSection.comicContainer}>
+//                 {/* En este View se cargaran las imagenes de los comics de la api */}
+//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
+//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
+//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
+//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
+//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
+//             </ScrollView>
+//         </View>
+//     )
+// }
+
+const API_KEY = 'e88d1f0be16d839cffa552ea78250fd210536f27'; // Pon tu API Key aquí
+
+const iconicComics = [
+  'The Amazing Spider-Man',
+  'Uncanny X-Men',
+  'Fantastic Four',
+  'Iron Man',
+  'Thor',
+];
+
+function ComicSection() {
+  const [comics, setComics] = useState([]);
+
+  useEffect(() => {
+    async function fetchComics() {
+      const results = [];
+      for (const name of iconicComics) {
+        try {
+          const res = await fetch(
+            `https://comicvine.gamespot.com/api/issues/?api_key=${API_KEY}&format=json&filter=name:${encodeURIComponent(
+              name
+            )}&limit=1`,
+            {
+              headers: {
+                'User-Agent': 'ReactNativeApp',
+              },
+            }
+          );
+          const json = await res.json();
+          if (json.results && json.results.length > 0) {
+            results.push(json.results[0]);
+          }
+        } catch (error) {
+          console.error('Error fetching comic:', error);
+        }
+      }
+      setComics(results);
+    }
+    fetchComics();
+  }, []);
+
+  return (
+    <View style={comicSection.contenedor}>
+      <Text style={comicSection.titulo}>Comics</Text>
+      <ScrollView horizontal={true} style={comicSection.comicContainer}>
+        {comics.length === 0 && <Text>Cargando comics...</Text>}
+        {comics.map((comic) => (
+          <ComicCard
+            key={comic.id}
+            url={comic.image?.medium_url || 'https://via.placeholder.com/150'}
+            name={comic.name}
+            issueNumber={comic.issue_number}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
 }
 
 function ComicCard({url}){
@@ -99,24 +158,6 @@ const comicSection = StyleSheet.create({
         height:"100%"
     }
 })
-
-
-// Seccion de personajes
-// function CharacterSection(){
-//     return(
-//         <View style={characterSection.contenedor}> 
-//             <Text style={characterSection.titulo}>Personajes</Text>
-//             <ScrollView horizontal={true} style={characterSection.characterContainer}>
-//                 {/* En este View se cargaran las imagenes de los personajes de la api */}
-//                 <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-//                 <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-//                 <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-//                 <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-//                 <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-//             </ScrollView>
-//         </View>
-//     )
-// }
 
 
 function CharacterSection() {
