@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator } from "react-native";
 import { auth } from '../../firebase';
 import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen(){
     return(
@@ -8,6 +9,7 @@ export default function HomeScreen(){
             <Saludo url={"https://i.pinimg.com/736x/9a/66/cf/9a66cf86fa63421cd8df09f5ac5006b9.jpg"}></Saludo>
             <ComicSection></ComicSection>
             <CharacterSection></CharacterSection>
+            <BotonNavigate></BotonNavigate>
         </ScrollView>
     )
 }
@@ -211,3 +213,15 @@ const characterSection = StyleSheet.create({
         height: "100%"
     }
 })
+
+// boton provisional que lleva a una nueva pantalla (este boton sera borrado despues)
+function BotonNavigate(){
+  const navegacion = useNavigation()
+  return(
+    <TouchableOpacity onPress={()=>{
+      navegacion.navigate("ComicScreen")
+    }}>
+      <Text style={{color:"white"}}>Ir a ComicScreen</Text>
+    </TouchableOpacity>
+  )
+}
