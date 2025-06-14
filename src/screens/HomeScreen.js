@@ -52,23 +52,7 @@ const saludo = StyleSheet.create({
     }
 })
 
-
-//Seccion de comics
-// function ComicSection(){
-//     return(
-//         <View style={comicSection.contenedor}> 
-//             <Text style={comicSection.titulo}>Comics</Text>
-//             <ScrollView horizontal={true} style={comicSection.comicContainer}>
-//                 {/* En este View se cargaran las imagenes de los comics de la api */}
-//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-//                 <ComicCard url={"https://i.pinimg.com/736x/77/c3/f2/77c3f264d749fabc98b84cc206b50740.jpg"}></ComicCard>
-//             </ScrollView>
-//         </View>
-//     )
-// }
+// Comic Section con consumo de API
 
 const API_KEY = 'e88d1f0be16d839cffa552ea78250fd210536f27'; // Pon tu API Key aquí
 
@@ -77,7 +61,7 @@ const iconicComics = [
   'Uncanny X-Men',
   'Fantastic Four',
   'Iron Man',
-  'Thor',
+  'The Incredible Hulk',
 ];
 
 function ComicSection() {
@@ -159,6 +143,8 @@ const comicSection = StyleSheet.create({
     }
 })
 
+
+// Character Section con consumo de API
 
 function CharacterSection() {
   const [characters, setCharacters] = useState([]);
