@@ -2,7 +2,9 @@ import { useNavigation } from "@react-navigation/native";
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { auth } from "../../firebase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 export default function ProfileScreen(){
     const email = auth.currentUser?.email;
@@ -26,13 +28,35 @@ const mainContainerStyles = StyleSheet.create({
     }
 })
 
-// function ProfileInfo({fondo, foto, usuario, correo}){
-//     return(
+// function ProfileInfo({ fondo, foto, usuario, correo }) {
+//     const [modalVisible, setModalVisible] = useState(false);
+//     const [editingType, setEditingType] = useState(null); // "foto" o "fondo"
+//     const [tempUrl, setTempUrl] = useState("");
+//     const [profileImage, setProfileImage] = useState(foto);
+//     const [backgroundImage, setBackgroundImage] = useState(fondo);
+
+//     const openModal = (type) => {
+//         setEditingType(type);
+//         setModalVisible(true);
+//         setTempUrl(type === "foto" ? profileImage : backgroundImage);
+//     };
+
+//     const saveImage = () => {
+//         if (editingType === "foto") {
+//             setProfileImage(tempUrl);
+//         } else if (editingType === "fondo") {
+//             setBackgroundImage(tempUrl);
+//         }
+//         setModalVisible(false);
+//         setTempUrl("");
+//     };
+
+//     return (
 //         <View style={profileInfoStyles.contenedor}>
 //             <View style={profileInfoStyles.header}>
 //                 <View style={profileInfoStyles.fotosContainer}>
-//                     <Image style={profileInfoStyles.fondo} source={{uri: fondo}}></Image>
-//                     <Image style={profileInfoStyles.foto} source={{uri: foto}}></Image>
+//                     <Image style={profileInfoStyles.fondo} source={{ uri: backgroundImage }} />
+//                     <Image style={profileInfoStyles.foto} source={{ uri: profileImage }} />
 //                 </View>
 //                 <View style={profileInfoStyles.userInfoContainer}>
 //                     <Text style={profileInfoStyles.usuario}>{usuario}</Text>
@@ -40,18 +64,73 @@ const mainContainerStyles = StyleSheet.create({
 //                 </View>
 //             </View>
 
-//             {/* Input o botones para editar la foto de perfil */}
+//             {/* Botones para editar */}
 //             <View style={profileInfoStyles.footer}>
-//                 <TouchableOpacity style={profileInfoStyles.btnEditar}>
+//                 <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("foto")}>
 //                     <Text style={profileInfoStyles.txtbtn}>Editar Foto</Text>
 //                 </TouchableOpacity>
-//                 <TouchableOpacity style={profileInfoStyles.btnEditar}>
+//                 <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("fondo")}>
 //                     <Text style={profileInfoStyles.txtbtn}>Editar Fondo</Text>
 //                 </TouchableOpacity>
 //             </View>
+
+//             {/* Modal para ingresar URL */}
+//             <Modal visible={modalVisible} transparent={true} animationType="slide">
+//                 <View style={{
+//                     flex: 1,
+//                     backgroundColor: "rgba(0,0,0,0.6)",
+//                     justifyContent: "center",
+//                     alignItems: "center"
+//                 }}>
+//                     <View style={{
+//                         width: 300,
+//                         padding: 20,
+//                         backgroundColor: "white",
+//                         borderRadius: 10
+//                     }}>
+//                         <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 18 }}>
+//                             Ingresa la URL de la {editingType === "foto" ? "foto" : "imagen de fondo"}
+//                         </Text>
+//                         <TextInput
+//                             style={{
+//                                 borderWidth: 1,
+//                                 borderColor: "#ccc",
+//                                 borderRadius: 8,
+//                                 padding: 10,
+//                                 marginBottom: 15
+//                             }}
+//                             placeholder="https://..."
+//                             value={tempUrl}
+//                             onChangeText={setTempUrl}
+//                         />
+//                         <TouchableOpacity
+//                             onPress={saveImage}
+//                             style={{
+//                                 backgroundColor: "#ED1D24",
+//                                 padding: 10,
+//                                 borderRadius: 8,
+//                                 marginBottom: 10
+//                             }}
+//                         >
+//                             <Text style={{ color: "white", textAlign: "center" }}>Guardar</Text>
+//                         </TouchableOpacity>
+//                         <TouchableOpacity
+//                             onPress={() => setModalVisible(false)}
+//                             style={{
+//                                 backgroundColor: "#ccc",
+//                                 padding: 10,
+//                                 borderRadius: 8
+//                             }}
+//                         >
+//                             <Text style={{ textAlign: "center" }}>Cancelar</Text>
+//                         </TouchableOpacity>
+//                     </View>
+//                 </View>
+//             </Modal>
 //         </View>
-//     )
+//     );
 // }
+
 
 function ProfileInfo({ fondo, foto, usuario, correo }) {
     const [modalVisible, setModalVisible] = useState(false);
@@ -59,6 +138,44 @@ function ProfileInfo({ fondo, foto, usuario, correo }) {
     const [tempUrl, setTempUrl] = useState("");
     const [profileImage, setProfileImage] = useState(foto);
     const [backgroundImage, setBackgroundImage] = useState(fondo);
+
+    const userId = auth.currentUser?.uid;
+
+    // 🔸 Obtener URLs guardadas en Firestore
+    useEffect(() => {
+        const fetchUserImages = async () => {
+            if (!userId) return;
+            try {
+                const docRef = doc(db, "users", userId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.foto) setProfileImage(data.foto);
+                    if (data.fondo) setBackgroundImage(data.fondo);
+                }
+            } catch (error) {
+                console.error("Error al obtener datos de Firestore:", error);
+            }
+        };
+
+        fetchUserImages();
+    }, []);
+
+    // 🔸 Guardar en Firestore
+    const saveImageToFirestore = async (type, url) => {
+        if (!userId) return;
+        try {
+            const userRef = doc(db, "users", userId);
+            const snapshot = await getDoc(userRef);
+            const existingData = snapshot.exists() ? snapshot.data() : {};
+            await setDoc(userRef, {
+                ...existingData,
+                [type]: url
+            });
+        } catch (error) {
+            console.error("Error al guardar en Firestore:", error);
+        }
+    };
 
     const openModal = (type) => {
         setEditingType(type);
@@ -69,8 +186,10 @@ function ProfileInfo({ fondo, foto, usuario, correo }) {
     const saveImage = () => {
         if (editingType === "foto") {
             setProfileImage(tempUrl);
+            saveImageToFirestore("foto", tempUrl);
         } else if (editingType === "fondo") {
             setBackgroundImage(tempUrl);
+            saveImageToFirestore("fondo", tempUrl);
         }
         setModalVisible(false);
         setTempUrl("");
