@@ -1,17 +1,25 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 export default function ComicScreen(){
+    const route = useRoute();
+    const { imageUrl, comicTitle, description, staff } = route.params;
     return(
+        // <ScrollView style={comicScreenStyles.mainContainer}>
+        //     <BtnBack></BtnBack>
+        //     <Header url="https://i.pinimg.com/736x/a6/2e/76/a62e76f9048a44a18b0a5a8eb39ef1e0.jpg" titulo="Amazing Fantasy"></Header>
+        //     {/* <Reacciones></Reacciones> */}
+        //     <Descripcion descripcion={"Amazing Fantasy #1 presenta una colección de historias cortas de ciencia ficción y fantasía, con giros sorprendentes y moralejas al estilo clásico. En este número, conocerás a inventores ambiciosos, robots conscientes, cámaras que predicen el futuro y animales con pensamientos humanos. Cada relato plantea preguntas sobre la moralidad, el destino y las consecuencias de desafiar lo desconocido, envolviendo al lector en mundos extraños donde nada es lo que parece."}></Descripcion>
+        //     <Staff></Staff>
+        // </ScrollView>
         <ScrollView style={comicScreenStyles.mainContainer}>
-            <BtnBack></BtnBack>
-            <Header url="https://i.pinimg.com/736x/a6/2e/76/a62e76f9048a44a18b0a5a8eb39ef1e0.jpg" titulo="Amazing Fantasy"></Header>
-            {/* <Reacciones></Reacciones> */}
-            <Descripcion descripcion={"Amazing Fantasy #1 presenta una colección de historias cortas de ciencia ficción y fantasía, con giros sorprendentes y moralejas al estilo clásico. En este número, conocerás a inventores ambiciosos, robots conscientes, cámaras que predicen el futuro y animales con pensamientos humanos. Cada relato plantea preguntas sobre la moralidad, el destino y las consecuencias de desafiar lo desconocido, envolviendo al lector en mundos extraños donde nada es lo que parece."}></Descripcion>
-            <Staff></Staff>
+            <BtnBack />
+            <Header url={imageUrl} titulo={comicTitle} />
+            <Descripcion descripcion={description} />
+            <Staff autores={staff.authors} personajes={staff.characters} />
         </ScrollView>
     )
 }
@@ -74,20 +82,38 @@ const descripcionStyles = StyleSheet.create({
 })
 
 // Contenedor con los autores y personajes que aparecen en el comic
-function Staff(){
-    return(
+// function Staff(){
+//     return(
+//         <View style={staffStyles.contenedor}>
+//             <View style={staffStyles.contenedorItems}>
+//                 <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
+//                 <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
+//             </View>
+//             <View style={staffStyles.contenedorItems}> 
+//                 <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
+//                 <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
+//             </View>
+//         </View>
+//     )
+// }
+function Staff({ autores = [], personajes = [] }) {
+    const defaultImage = "https://via.placeholder.com/50";
+    return (
         <View style={staffStyles.contenedor}>
-            <View style={staffStyles.contenedorItems}>
-                <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
-                <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
-            </View>
-            <View style={staffStyles.contenedorItems}> 
-                <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
-                <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
-            </View>
+        <View style={staffStyles.contenedorItems}>
+            {autores.map((autor, index) => (
+            <Autores key={index} url={autor.image?.icon_url || defaultImage} nombreAutor={autor.name} />
+            ))}
         </View>
-    )
+        <View style={staffStyles.contenedorItems}>
+            {personajes.map((personaje, index) => (
+            <Personajes key={index} url={personaje.image?.icon_url || defaultImage} />
+            ))}
+        </View>
+        </View>
+    );
 }
+
 const staffStyles = StyleSheet.create({
     contenedor:{
         width:340,
