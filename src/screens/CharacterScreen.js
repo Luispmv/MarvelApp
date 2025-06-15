@@ -1,13 +1,15 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Text, View, StyleSheet, TouchableOpacity, Image} from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function CharacterScreen(){
+    const route = useRoute()
+    const {characterUrl, characterName, powerstats} = route.params;
     return(
         <View style={{backgroundColor:"#242121", height:1000}}>
             <BtnBack></BtnBack>
-            <CharacterCard url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></CharacterCard>
-            <Stats></Stats>
+            <CharacterCard url={characterUrl} nombreSuperheroe={characterName} />
+            <Stats stats={powerstats}></Stats>
         </View>
     )
 }
@@ -39,9 +41,12 @@ const btnbackStyles =  StyleSheet.create({
 })
 
 
-function CharacterCard({url}){
+function CharacterCard({url, nombreSuperheroe}){
     return(
-        <Image style={characterCardStyles.characterCard} source={{uri: url}}></Image>
+        <View>
+            <Image style={characterCardStyles.characterCard} source={{uri: url}}></Image>
+            <Text style={characterCardStyles.texto}>{nombreSuperheroe}</Text>
+        </View>
     )
 }
 
@@ -52,21 +57,37 @@ const characterCardStyles = StyleSheet.create({
         alignSelf:"center",
         borderRadius:20,
         marginTop:90
+    },
+    texto:{
+        fontSize:40,
+        fontWeight:"bold",
+        textAlign:"center",
+        color:"white"
     }
 })
 
 // Estadisticas de un personaje
-function Stats(){
-    return(
-        <View style={statsStyles.container}>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-            <PowerStat stat={"Inteligencia"} valor={100}></PowerStat>
-        </View>
-    )
+function Stats({stats}){
+    const labels = {
+    intelligence: 'Inteligencia',
+    strength:     'Fuerza',
+    speed:        'Velocidad',
+    durability:   'Durabilidad',
+    power:        'Poder',
+    combat:       'Combate',
+  };
+
+  return (
+    <View style={statsStyles.container}>
+      {Object.entries(labels).map(([key, label]) => (
+        <PowerStat
+          key={key}
+          stat={label}
+          valor={stats?.[key] ?? '—'}   // muestra guion si viene null / "unknown"
+        />
+      ))}
+    </View>
+  );
 }
 
 const statsStyles = StyleSheet.create({

@@ -61,7 +61,7 @@ const saludo = StyleSheet.create({
 
 // Comic Section con consumo de API
 
-const API_KEY = 'e88d1f0be16d839cffa552ea78250fd210536f27'; // Pon tu API Key aquí
+const API_KEY = 'e88d1f0be16d839cffa552ea78250fd210536f27';
 
 const iconicComics = [
   'The Amazing Spider-Man',
@@ -155,26 +155,29 @@ const comicSection = StyleSheet.create({
 })
 
 
-// Character Section con consumo de API
-
 function CharacterSection() {
-  const [characters, setCharacters] = useState([]);
+  const [characters, setCharacters] = useState([]);    
 
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const ids = [620, 332, 346, 687, 213]; // IDs de personajes a mostrar
-        const accessToken = 'e6fb6589cb6ff09720fe1677c06807e9'; // <-- Cambia esto por tu token real
+        const ids = [620, 332, 346, 687, 213];        
+        const accessToken = 'e6fb6589cb6ff09720fe1677c06807e9';
         const responses = await Promise.all(
-          ids.map(id =>
-            fetch(`https://superheroapi.com/api/${accessToken}/${id}/image`)
-              .then(res => res.json())
-              .then(data => data.url)
-          )
+          ids.map(async id => {
+            const res  = await fetch(`https://superheroapi.com/api/${accessToken}/${id}`);
+            const data = await res.json();
+            return {
+              id:   data.id,
+              name: data.name,
+              imageUrl: data.image.url,
+              stats: data.powerstats // añadido recien
+            };
+          })
         );
         setCharacters(responses);
       } catch (error) {
-        console.error('Error al cargar las imágenes:', error);
+        console.error('Error al cargar los personajes:', error);
       }
     };
 
@@ -184,27 +187,47 @@ function CharacterSection() {
   return (
     <View style={characterSection.contenedor}>
       <Text style={characterSection.titulo}>Personajes</Text>
-      <ScrollView horizontal={true} style={characterSection.characterContainer}>
-        {characters.map((url, index) => (
-          <CharacterCard key={index} url={url} />
+
+      <ScrollView horizontal style={characterSection.characterContainer}>
+        {characters.map(character => (
+          <CharacterCard
+            key={character.id}
+            id={character.id}
+            url={character.imageUrl}
+            name={character.name}
+            stats={character.stats} 
+          />
         ))}
       </ScrollView>
     </View>
   );
 }
 
-function CharacterCard({url}){
 
-    const navegacion = useNavigation()
+function CharacterCard({ id, url, name, stats }) {
+  const navigation = useNavigation();
 
-    return(
-        <TouchableOpacity style={characterSection.characterCardContainer} onPress={()=>{
-          navegacion.navigate("CharacterScreen")
-        }}>
-            <Image style={characterSection.characterCard} source={{uri: url}}></Image>
-        </TouchableOpacity>
-    )
+  return (
+    <TouchableOpacity
+      style={characterSection.characterCardContainer}
+      onPress={() =>
+        navigation.navigate('CharacterScreen', {
+          id,
+          characterUrl: url,
+          characterName: name,
+          powerstats: stats
+        })
+      }>
+      <Image source={{ uri: url }} style={characterSection.characterCard} />
+      {/* Muestra el nombre debajo de la imagen (opcional) */}
+      <Text style={{ color: '#fff', textAlign: 'center', marginTop: 4 }}>{name}</Text>
+    </TouchableOpacity>
+  );
 }
+
+
+
+
 
 const characterSection = StyleSheet.create({
     contenedor:{
