@@ -193,8 +193,13 @@ function CharacterSection() {
 }
 
 function CharacterCard({url}){
+
+    const navegacion = useNavigation()
+
     return(
-        <TouchableOpacity style={characterSection.characterCardContainer}>
+        <TouchableOpacity style={characterSection.characterCardContainer} onPress={()=>{
+          navegacion.navigate("CharacterScreen")
+        }}>
             <Image style={characterSection.characterCard} source={{uri: url}}></Image>
         </TouchableOpacity>
     )

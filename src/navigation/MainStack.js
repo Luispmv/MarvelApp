@@ -4,6 +4,7 @@ import RegistroScreen from "../screens/RegistroScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ComicScreen from "../screens/ComicScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import CharacterScreen from "../screens/CharacterScreen";
 
 const { createNativeStackNavigator } = require("@react-navigation/native-stack");
 
@@ -24,6 +25,8 @@ export default function MainStack(){
                 <Stack.Screen name="ComicScreen" component={ComicScreen}></Stack.Screen>
 
                 <Stack.Screen name="ProfileScreen" component={ProfileScreen}></Stack.Screen>
+
+                <Stack.Screen name="CharacterScreen" component={CharacterScreen}></Stack.Screen>
 
             </Stack.Navigator>
         </NavigationContainer>
