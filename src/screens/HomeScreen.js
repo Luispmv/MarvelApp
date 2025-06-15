@@ -9,7 +9,6 @@ export default function HomeScreen(){
             <Saludo url={"https://i.pinimg.com/736x/9a/66/cf/9a66cf86fa63421cd8df09f5ac5006b9.jpg"}></Saludo>
             <ComicSection></ComicSection>
             <CharacterSection></CharacterSection>
-            <BotonNavigate></BotonNavigate>
         </ScrollView>
     )
 }
@@ -37,7 +36,6 @@ const saludo = StyleSheet.create({
     contenedor:{
         display:"flex",
         flexDirection:"row",
-        gap:130,
         justifyContent:"space-between",
         marginTop:20,
         width:340,
@@ -67,7 +65,7 @@ const API_KEY = 'e88d1f0be16d839cffa552ea78250fd210536f27'; // Pon tu API Key aq
 
 const iconicComics = [
   'The Amazing Spider-Man',
-  'Uncanny X-Men',
+  "Amazing Fantasy",
   'Fantastic Four',
   'Iron Man',
   'The Incredible Hulk',
@@ -123,8 +121,11 @@ function ComicSection() {
 }
 
 function ComicCard({url}){
+    const navegacion = useNavigation()
     return(
-        <TouchableOpacity style={comicSection.comicCardContainer}>
+        <TouchableOpacity style={comicSection.comicCardContainer} onPress={()=>{
+          navegacion.navigate("ComicScreen")
+        }}>
             <Image style={comicSection.comicCard} source={{uri: url}}></Image>
         </TouchableOpacity>
     )
@@ -149,7 +150,7 @@ const comicSection = StyleSheet.create({
     },
     comicCard:{
         width: "100%",
-        height:"100%"
+        height:"100%",
     }
 })
 
@@ -224,18 +225,7 @@ const characterSection = StyleSheet.create({
     },
     characterCard:{
         width: "100%",
-        height: "100%"
+        height: "100%",
+        borderRadius:20
     }
 })
-
-// boton provisional que lleva a una nueva pantalla (este boton sera borrado despues)
-function BotonNavigate(){
-  const navegacion = useNavigation()
-  return(
-    <TouchableOpacity onPress={()=>{
-      navegacion.navigate("ComicScreen")
-    }}>
-      <Text style={{color:"white"}}>Ir a ComicScreen</Text>
-    </TouchableOpacity>
-  )
-}

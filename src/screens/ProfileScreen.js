@@ -4,14 +4,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { auth } from "../../firebase";
 
 export default function ProfileScreen(){
+    const email = auth.currentUser?.email;
+    const username = email ? email.split("@")[0] : "";
     return(
         <ScrollView style={mainContainerStyles.mainContainer}>
             <BtnBack></BtnBack>
             <ProfileInfo 
             fondo={"https://images.pexels.com/photos/26797335/pexels-photo-26797335.jpeg"} 
             foto={"https://i.pinimg.com/736x/9a/66/cf/9a66cf86fa63421cd8df09f5ac5006b9.jpg"}
-            usuario={"Miguel"}
-            correo={"Miguel@gmail.com"}></ProfileInfo>
+            usuario={username}
+            correo={email}></ProfileInfo>
             <BtnCerrarSesion></BtnCerrarSesion>
         </ScrollView>
     )

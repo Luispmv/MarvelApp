@@ -9,7 +9,7 @@ export default function ComicScreen(){
         <ScrollView style={comicScreenStyles.mainContainer}>
             <BtnBack></BtnBack>
             <Header url="https://i.pinimg.com/736x/a6/2e/76/a62e76f9048a44a18b0a5a8eb39ef1e0.jpg" titulo="Amazing Fantasy"></Header>
-            <Reacciones></Reacciones>
+            {/* <Reacciones></Reacciones> */}
             <Descripcion descripcion={"Amazing Fantasy #1 presenta una colección de historias cortas de ciencia ficción y fantasía, con giros sorprendentes y moralejas al estilo clásico. En este número, conocerás a inventores ambiciosos, robots conscientes, cámaras que predicen el futuro y animales con pensamientos humanos. Cada relato plantea preguntas sobre la moralidad, el destino y las consecuencias de desafiar lo desconocido, envolviendo al lector en mundos extraños donde nada es lo que parece."}></Descripcion>
             <Staff></Staff>
         </ScrollView>
@@ -51,33 +51,6 @@ const headerStyles = StyleSheet.create({
         alignSelf:"center"
     }
 })
-
-// Componente con los botones de like y dislike
-
-function Reacciones(){
-    return(
-        <View style={reactionStyles.contenedor}>
-            <TouchableOpacity>
-                <Icon name="thumbs-up" size={30} color="#ED1D24" />
-            </TouchableOpacity>
-            <TouchableOpacity>
-                <Icon name="thumbs-down" size={30} color="white" />
-            </TouchableOpacity>
-        </View>
-    )
-}
-
-const reactionStyles = StyleSheet.create({
-    contenedor:{
-        display:"flex",
-        flexDirection:"row",
-        gap:20,
-        width:340,
-        alignSelf:"center",
-        marginBottom:15
-    }
-})
-
 function Descripcion({descripcion}){
     return(
         <ScrollView style={descripcionStyles.contenedor}>
@@ -96,6 +69,7 @@ const descripcionStyles = StyleSheet.create({
         fontSize:20,
         width:340,
         alignSelf:"center",
+        textAlign:"justify"
     }
 })
 
