@@ -3,6 +3,7 @@ import LoginScreen from "../screens/LoginScreen";
 import RegistroScreen from "../screens/RegistroScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ComicScreen from "../screens/ComicScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const { createNativeStackNavigator } = require("@react-navigation/native-stack");
 
@@ -21,6 +22,8 @@ export default function MainStack(){
                 <Stack.Screen name="HomeScreen" component={HomeScreen}></Stack.Screen>
 
                 <Stack.Screen name="ComicScreen" component={ComicScreen}></Stack.Screen>
+
+                <Stack.Screen name="ProfileScreen" component={ProfileScreen}></Stack.Screen>
 
             </Stack.Navigator>
         </NavigationContainer>

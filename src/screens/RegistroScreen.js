@@ -119,7 +119,8 @@ const form = StyleSheet.create({
         paddingRight: 10,
         textAlign:"center",
         fontSize: 20,
-        alignSelf:"center"
+        alignSelf:"center",
+        color:"white"
     },
     inputContraseña:{
         height:60,
@@ -132,7 +133,8 @@ const form = StyleSheet.create({
         paddingRight: 10,
         textAlign:"center",
         fontSize: 20,
-        alignSelf:"center"
+        alignSelf:"center",
+        color:"white"
     },
     contendorBotones:{
         display:"flex",

@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -173,8 +175,11 @@ const personajesStyles = StyleSheet.create({
 
 // boton de regreso
 function BtnBack(){
+    const navegacion = useNavigation()
     return(
-        <TouchableOpacity style={btnbackStyles.contenedor}>
+        <TouchableOpacity style={btnbackStyles.contenedor} onPress={()=>{
+            navegacion.navigate("HomeScreen")
+        }}>
             <Icon name="chevron-left" size={30} color="white" />
         </TouchableOpacity>
     )

@@ -18,10 +18,16 @@ function Saludo({ url }) {
   const email = auth.currentUser?.email;
   const username = email ? email.split("@")[0] : "";
 
+  const navegacion = useNavigation()
+
   return (
     <View style={saludo.contenedor}>
-      <Text style={saludo.saludo}>Hola <Text style={{color:"#ED1D24"}}>{username} </Text> </Text>
-      <Image source={{ uri: url }} style={saludo.imagen} />
+      <Text style={saludo.saludo}>Hola <Text style={{color:"#ED1D24", fontWeight:"bold"}}>{username} </Text> </Text>
+      <TouchableOpacity style={{alignSelf:"center"}} onPress={()=>{
+          navegacion.navigate("ProfileScreen")
+      }}>
+        <Image source={{ uri: url }} style={saludo.imagen} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -32,10 +38,10 @@ const saludo = StyleSheet.create({
         display:"flex",
         flexDirection:"row",
         gap:130,
-        justifyContent:"center",
+        justifyContent:"space-between",
         marginTop:20,
-        paddingLeft:50,
-        paddingRight:50
+        width:340,
+        alignSelf:"center"
     },
     saludo:{
         fontSize:30,
@@ -44,7 +50,8 @@ const saludo = StyleSheet.create({
         marginTop:33,
         alignSelf:"center",
         justifyContent:"center",
-        marginBottom:30
+        marginBottom:30,
+        fontWeight:"bold"
     },
     imagen:{
         height:50, 
@@ -101,7 +108,7 @@ function ComicSection() {
     <View style={comicSection.contenedor}>
       <Text style={comicSection.titulo}>Comics</Text>
       <ScrollView horizontal={true} style={comicSection.comicContainer}>
-        {comics.length === 0 && <Text>Cargando comics...</Text>}
+        {comics.length === 0 && <Text style={{color:"white"}}>Cargando comics...</Text>}
         {comics.map((comic) => (
           <ComicCard
             key={comic.id}
@@ -130,7 +137,8 @@ const comicSection = StyleSheet.create({
     },
     titulo:{
         fontSize:25,
-        color:"#ED1D24"
+        color:"#ED1D24",
+        fontWeight:"bold"
     },
     comicContainer:{
     },
@@ -199,7 +207,8 @@ const characterSection = StyleSheet.create({
     },
     titulo:{
         fontSize:25,
-        color:"#ED1D24"
+        color:"#ED1D24",
+        fontWeight:"bold"
     },
     characterContainer:{
     },
