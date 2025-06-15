@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 
-import { decode } from 'html-entities';   // ➊  instala con:  npm i html-entities
+import { decode } from 'html-entities';   
 
 function cleanHtml(html = '') {
   // quita etiquetas y decodifica entidades (&amp; → &)
@@ -79,54 +79,7 @@ const iconicComics = [
   'The Incredible Hulk',
 ];
 
-// function ComicSection() {
-//   const [comics, setComics] = useState([]);
 
-//   useEffect(() => {
-//     async function fetchComics() {
-//       const results = [];
-//       for (const name of iconicComics) {
-//         try {
-//           const res = await fetch(
-//             `https://comicvine.gamespot.com/api/issues/?api_key=${API_KEY}&format=json&filter=name:${encodeURIComponent(
-//               name
-//             )}&limit=1`,
-//             {
-//               headers: {
-//                 'User-Agent': 'ReactNativeApp',
-//               },
-//             }
-//           );
-//           const json = await res.json();
-//           if (json.results && json.results.length > 0) {
-//             results.push(json.results[0]);
-//           }
-//         } catch (error) {
-//           console.error('Error fetching comic:', error);
-//         }
-//       }
-//       setComics(results);
-//     }
-//     fetchComics();
-//   }, []);
-
-//   return (
-//     <View style={comicSection.contenedor}>
-//       <Text style={comicSection.titulo}>Comics</Text>
-//       <ScrollView horizontal={true} style={comicSection.comicContainer}>
-//         {comics.length === 0 && <Text style={{color:"white"}}>Cargando comics...</Text>}
-//         {comics.map((comic) => (
-//           <ComicCard
-//             key={comic.id}
-//             url={comic.image?.medium_url || 'https://via.placeholder.com/150'}
-//             name={comic.name}
-//             issueNumber={comic.issue_number}
-//           />
-//         ))}
-//       </ScrollView>
-//     </View>
-//   );
-// }
 
 function ComicSection() {
   const [comics, setComics] = useState([]);
@@ -196,21 +149,7 @@ function ComicSection() {
 }
 
 
-// function ComicCard({url, name, description, staff}){
-//     const navegacion = useNavigation()
-//     return(
-//         <TouchableOpacity style={comicSection.comicCardContainer} onPress={()=>{
-//           navegacion.navigate("ComicScreen"),{
-//             imageUrl: url,
-//             comicTitle: name,
-//             description: description,
-//             staff: staff
-//           }
-//         }}>
-//             <Image style={comicSection.comicCard} source={{uri: url}}></Image>
-//         </TouchableOpacity>
-//     )
-// }
+
 function ComicCard({ url, name, description, staff }) {
   const navegacion = useNavigation();
   

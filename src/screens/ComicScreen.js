@@ -4,17 +4,33 @@ import { Image, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "rea
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
+const marvelAuthors = [
+    {
+        name: "Stan Lee",
+        image: "https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"
+    },
+    {
+        name: "Jack Kirby",
+        image: "https://i.pinimg.com/736x/c7/8d/bc/c78dbca4cde2bb60643beef2f31a5164.jpg"
+    }
+];
+
+
+const marvelCharacters = [
+    {
+        name: "Spider-Man",
+        image: "https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"
+    },
+    {
+        name: "Iron Man",
+        image: "https://i.pinimg.com/736x/d7/b7/ac/d7b7ac5970e78b7a12f8ad51ece24e89.jpg"
+    }
+];
+
 export default function ComicScreen(){
     const route = useRoute();
     const { imageUrl, comicTitle, description, staff } = route.params;
     return(
-        // <ScrollView style={comicScreenStyles.mainContainer}>
-        //     <BtnBack></BtnBack>
-        //     <Header url="https://i.pinimg.com/736x/a6/2e/76/a62e76f9048a44a18b0a5a8eb39ef1e0.jpg" titulo="Amazing Fantasy"></Header>
-        //     {/* <Reacciones></Reacciones> */}
-        //     <Descripcion descripcion={"Amazing Fantasy #1 presenta una colección de historias cortas de ciencia ficción y fantasía, con giros sorprendentes y moralejas al estilo clásico. En este número, conocerás a inventores ambiciosos, robots conscientes, cámaras que predicen el futuro y animales con pensamientos humanos. Cada relato plantea preguntas sobre la moralidad, el destino y las consecuencias de desafiar lo desconocido, envolviendo al lector en mundos extraños donde nada es lo que parece."}></Descripcion>
-        //     <Staff></Staff>
-        // </ScrollView>
         <ScrollView style={comicScreenStyles.mainContainer}>
             <BtnBack />
             <Header url={imageUrl} titulo={comicTitle} />
@@ -81,35 +97,54 @@ const descripcionStyles = StyleSheet.create({
     }
 })
 
-// Contenedor con los autores y personajes que aparecen en el comic
-// function Staff(){
-//     return(
-//         <View style={staffStyles.contenedor}>
-//             <View style={staffStyles.contenedorItems}>
-//                 <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
-//                 <Autores url={"https://i.pinimg.com/736x/d9/b4/0f/d9b40f83f360271d6342e2f39b9795ef.jpg"} nombreAutor={"Stan Lee"}></Autores>
-//             </View>
-//             <View style={staffStyles.contenedorItems}> 
-//                 <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
-//                 <Personajes url={"https://i.pinimg.com/736x/d4/2f/96/d42f96b80d186a494827447008fca5a4.jpg"}></Personajes>
-//             </View>
-//         </View>
-//     )
-// }
+
 function Staff({ autores = [], personajes = [] }) {
-    const defaultImage = "https://via.placeholder.com/50";
+    const navigation = useNavigation();
+
     return (
         <View style={staffStyles.contenedor}>
-        <View style={staffStyles.contenedorItems}>
-            {autores.map((autor, index) => (
-            <Autores key={index} url={autor.image?.icon_url || defaultImage} nombreAutor={autor.name} />
-            ))}
-        </View>
-        <View style={staffStyles.contenedorItems}>
-            {personajes.map((personaje, index) => (
-            <Personajes key={index} url={personaje.image?.icon_url || defaultImage} />
-            ))}
-        </View>
+            {/* <Text style={staffStyles.titulo}>Autores</Text> */}
+            <ScrollView horizontal style={staffStyles.scrollContainer}>
+                <View style={staffStyles.contenedorItems}>
+                    {marvelAuthors.map((autor, index) => (
+                        <Autores 
+                            key={index} 
+                            url={autor.image} 
+                            nombreAutor={autor.name} 
+                        />
+                    ))}
+                </View>
+            </ScrollView>
+
+            {/* <Text style={staffStyles.titulo}>Personajes</Text> */}
+            <ScrollView horizontal style={staffStyles.scrollContainer}>
+                <View style={staffStyles.contenedorItems}>
+                    {marvelCharacters.map((personaje, index) => (
+                        <TouchableOpacity 
+                            key={index}
+                            onPress={() => {
+                                navigation.navigate('CharacterScreen', {
+                                    characterUrl: personaje.image,
+                                    characterName: personaje.name,
+                                    powerstats: {
+                                        intelligence: 85,
+                                        strength: 90,
+                                        speed: 80,
+                                        durability: 85,
+                                        power: 85,
+                                        combat: 90
+                                    }
+                                });
+                            }}
+                        >
+                            <Personajes 
+                                url={personaje.image}
+                                nombre={personaje.name}
+                            />
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     );
 }
@@ -118,12 +153,23 @@ const staffStyles = StyleSheet.create({
     contenedor:{
         width:340,
         alignSelf:"center",
-        gap:10
-    } , 
+        gap:15,
+        marginBottom: 30
+    },
+    titulo: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#ED1D24",
+        marginBottom: 10
+    },
+    scrollContainer: {
+        flexGrow: 0
+    },
     contenedorItems:{
         display:"flex",
         flexDirection:"row",
-        gap:10
+        gap:15,
+        paddingHorizontal: 5
     }
 })
 
@@ -131,7 +177,7 @@ function Autores({url, nombreAutor}){
     return(
         <View style={autoresStyle.contenedor}>
             <Image style={autoresStyle.imagen} source={{uri: url}}></Image>
-            <Text style={autoresStyle.texto}>{nombreAutor}</Text>
+            <Text style={autoresStyle.texto} numberOfLines={1}>{nombreAutor}</Text>
         </View>
     )
 }
@@ -144,32 +190,51 @@ const autoresStyle = StyleSheet.create({
         borderStyle:"solid",
         borderWidth:2,
         borderColor:"#929090",
-        width:120,
+        width:150,
         justifyContent:"space-around",
-        borderRadius:100
+        alignItems: "center",
+        borderRadius:100,
+        backgroundColor: "rgba(255,255,255,0.1)"
     },
     imagen:{
-        width:30,
-        height:30,
+        width:35,
+        height:35,
         borderRadius:100
     },
     texto:{
-        fontSize:15,
-        color:"#929090",
-        marginTop:5
+        fontSize:14,
+        color:"white",
+        flex: 1,
+        marginLeft: 8
     }
 })
 
-function Personajes({url}){
+function Personajes({url, nombre}){
     return(
-        <Image style={personajesStyles.imagen} source={{uri: url}}></Image>
+        <View style={personajesStyles.contenedor}>
+            <Image style={personajesStyles.imagen} source={{uri: url}}></Image>
+            <Text style={personajesStyles.nombre} numberOfLines={1}>{nombre}</Text>
+        </View>
     )
 }
+
 const personajesStyles = StyleSheet.create({
+    contenedor: {
+        alignItems: "center",
+        width: 80
+    },
     imagen:{
-        width:50,
-        height:50,
-        borderRadius:100
+        width:60,
+        height:60,
+        borderRadius:100,
+        borderWidth: 2,
+        borderColor: "#ED1D24"
+    },
+    nombre: {
+        color: "white",
+        fontSize: 12,
+        marginTop: 5,
+        textAlign: "center"
     }
 })
 
