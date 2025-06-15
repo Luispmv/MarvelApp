@@ -1,8 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator } from "react-native";
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-
+import { doc, getDoc } from "firebase/firestore";
 
 import { decode } from 'html-entities';   
 
@@ -12,28 +12,56 @@ function cleanHtml(html = '') {
 }
 
 export default function HomeScreen(){
+  const [fotoUrl, setFotoUrl] = useState("");
+
+  useEffect(() => {
+    const fetchFoto = async () => {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+
+      try {
+        const docSnap = await getDoc(doc(db, "users", userId));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.foto) {
+            setFotoUrl(data.foto);
+          }
+        }
+      } catch (error) {
+        console.error("Error obteniendo foto:", error);
+      }
+    };
+
+    fetchFoto();
+  }, []);
+
     return(
         <ScrollView style={{backgroundColor:"#242121", height:1000}} >
-            <Saludo url={"https://i.pinimg.com/736x/0d/79/8f/0d798fe2210f0fba0764e577cb45fed0.jpg"}></Saludo>
+            <Saludo url={fotoUrl}></Saludo>
             <ComicSection></ComicSection>
             <CharacterSection></CharacterSection>
         </ScrollView>
     )
 }
 
+
 function Saludo({ url }) {
   const email = auth.currentUser?.email;
   const username = email ? email.split("@")[0] : "";
 
-  const navegacion = useNavigation()
+  const navegacion = useNavigation();
+
+  const uriFinal = url || "https://i.pinimg.com/736x/0d/79/8f/0d798fe2210f0fba0764e577cb45fed0.jpg";
 
   return (
     <View style={saludo.contenedor}>
-      <Text style={saludo.saludo}>Hola <Text style={{color:"#ED1D24", fontWeight:"bold"}}>{username} </Text> </Text>
-      <TouchableOpacity style={{alignSelf:"center"}} onPress={()=>{
-          navegacion.navigate("ProfileScreen")
+      <Text style={saludo.saludo}>
+        Hola <Text style={{ color: "#ED1D24", fontWeight: "bold" }}>{username}</Text>
+      </Text>
+      <TouchableOpacity style={{ alignSelf: "center" }} onPress={() => {
+        navegacion.navigate("ProfileScreen");
       }}>
-        <Image source={{ uri: url }} style={saludo.imagen} />
+        <Image source={{ uri: uriFinal }} style={saludo.imagen} />
       </TouchableOpacity>
     </View>
   );
