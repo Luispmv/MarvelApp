@@ -14,7 +14,7 @@ function cleanHtml(html = '') {
 export default function HomeScreen(){
     return(
         <ScrollView style={{backgroundColor:"#242121", height:1000}} >
-            <Saludo url={"https://i.pinimg.com/736x/9a/66/cf/9a66cf86fa63421cd8df09f5ac5006b9.jpg"}></Saludo>
+            <Saludo url={"https://i.pinimg.com/736x/0d/79/8f/0d798fe2210f0fba0764e577cb45fed0.jpg"}></Saludo>
             <ComicSection></ComicSection>
             <CharacterSection></CharacterSection>
         </ScrollView>

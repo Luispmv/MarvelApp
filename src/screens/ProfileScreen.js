@@ -3,7 +3,7 @@ import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View, Tex
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { auth } from "../../firebase";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteField, updateDoc} from "firebase/firestore";
 import { db } from "../../firebase";
 
 export default function ProfileScreen(){
@@ -13,8 +13,8 @@ export default function ProfileScreen(){
         <ScrollView style={mainContainerStyles.mainContainer}>
             <BtnBack></BtnBack>
             <ProfileInfo 
-            fondo={"https://images.pexels.com/photos/26797335/pexels-photo-26797335.jpeg"} 
-            foto={"https://i.pinimg.com/736x/9a/66/cf/9a66cf86fa63421cd8df09f5ac5006b9.jpg"}
+            fondo={"https://i.pinimg.com/736x/30/a2/34/30a2349d8085cfe2dd1904c340823f36.jpg"} 
+            foto={"https://i.pinimg.com/736x/0d/79/8f/0d798fe2210f0fba0764e577cb45fed0.jpg"}
             usuario={username}
             correo={email}></ProfileInfo>
             <BtnCerrarSesion></BtnCerrarSesion>
@@ -28,307 +28,233 @@ const mainContainerStyles = StyleSheet.create({
     }
 })
 
-// function ProfileInfo({ fondo, foto, usuario, correo }) {
-//     const [modalVisible, setModalVisible] = useState(false);
-//     const [editingType, setEditingType] = useState(null); // "foto" o "fondo"
-//     const [tempUrl, setTempUrl] = useState("");
-//     const [profileImage, setProfileImage] = useState(foto);
-//     const [backgroundImage, setBackgroundImage] = useState(fondo);
-
-//     const openModal = (type) => {
-//         setEditingType(type);
-//         setModalVisible(true);
-//         setTempUrl(type === "foto" ? profileImage : backgroundImage);
-//     };
-
-//     const saveImage = () => {
-//         if (editingType === "foto") {
-//             setProfileImage(tempUrl);
-//         } else if (editingType === "fondo") {
-//             setBackgroundImage(tempUrl);
-//         }
-//         setModalVisible(false);
-//         setTempUrl("");
-//     };
-
-//     return (
-//         <View style={profileInfoStyles.contenedor}>
-//             <View style={profileInfoStyles.header}>
-//                 <View style={profileInfoStyles.fotosContainer}>
-//                     <Image style={profileInfoStyles.fondo} source={{ uri: backgroundImage }} />
-//                     <Image style={profileInfoStyles.foto} source={{ uri: profileImage }} />
-//                 </View>
-//                 <View style={profileInfoStyles.userInfoContainer}>
-//                     <Text style={profileInfoStyles.usuario}>{usuario}</Text>
-//                     <Text style={profileInfoStyles.email}>{correo}</Text>
-//                 </View>
-//             </View>
-
-//             {/* Botones para editar */}
-//             <View style={profileInfoStyles.footer}>
-//                 <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("foto")}>
-//                     <Text style={profileInfoStyles.txtbtn}>Editar Foto</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("fondo")}>
-//                     <Text style={profileInfoStyles.txtbtn}>Editar Fondo</Text>
-//                 </TouchableOpacity>
-//             </View>
-
-//             {/* Modal para ingresar URL */}
-//             <Modal visible={modalVisible} transparent={true} animationType="slide">
-//                 <View style={{
-//                     flex: 1,
-//                     backgroundColor: "rgba(0,0,0,0.6)",
-//                     justifyContent: "center",
-//                     alignItems: "center"
-//                 }}>
-//                     <View style={{
-//                         width: 300,
-//                         padding: 20,
-//                         backgroundColor: "white",
-//                         borderRadius: 10
-//                     }}>
-//                         <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 18 }}>
-//                             Ingresa la URL de la {editingType === "foto" ? "foto" : "imagen de fondo"}
-//                         </Text>
-//                         <TextInput
-//                             style={{
-//                                 borderWidth: 1,
-//                                 borderColor: "#ccc",
-//                                 borderRadius: 8,
-//                                 padding: 10,
-//                                 marginBottom: 15
-//                             }}
-//                             placeholder="https://..."
-//                             value={tempUrl}
-//                             onChangeText={setTempUrl}
-//                         />
-//                         <TouchableOpacity
-//                             onPress={saveImage}
-//                             style={{
-//                                 backgroundColor: "#ED1D24",
-//                                 padding: 10,
-//                                 borderRadius: 8,
-//                                 marginBottom: 10
-//                             }}
-//                         >
-//                             <Text style={{ color: "white", textAlign: "center" }}>Guardar</Text>
-//                         </TouchableOpacity>
-//                         <TouchableOpacity
-//                             onPress={() => setModalVisible(false)}
-//                             style={{
-//                                 backgroundColor: "#ccc",
-//                                 padding: 10,
-//                                 borderRadius: 8
-//                             }}
-//                         >
-//                             <Text style={{ textAlign: "center" }}>Cancelar</Text>
-//                         </TouchableOpacity>
-//                     </View>
-//                 </View>
-//             </Modal>
-//         </View>
-//     );
-// }
 
 
 function ProfileInfo({ fondo, foto, usuario, correo }) {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [editingType, setEditingType] = useState(null); // "foto" o "fondo"
-    const [tempUrl, setTempUrl] = useState("");
-    const [profileImage, setProfileImage] = useState(foto);
-    const [backgroundImage, setBackgroundImage] = useState(fondo);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingType, setEditingType] = useState(null); // "foto" | "fondo"
+  const [tempUrl, setTempUrl] = useState("");
+  const [profileImage, setProfileImage] = useState(foto);
+  const [backgroundImage, setBackgroundImage] = useState(fondo);
 
-    const userId = auth.currentUser?.uid;
+  const userId = auth.currentUser?.uid;
 
-    // 🔸 Obtener URLs guardadas en Firestore
-    useEffect(() => {
-        const fetchUserImages = async () => {
-            if (!userId) return;
-            try {
-                const docRef = doc(db, "users", userId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data.foto) setProfileImage(data.foto);
-                    if (data.fondo) setBackgroundImage(data.fondo);
-                }
-            } catch (error) {
-                console.error("Error al obtener datos de Firestore:", error);
-            }
-        };
-
-        fetchUserImages();
-    }, []);
-
-    // 🔸 Guardar en Firestore
-    const saveImageToFirestore = async (type, url) => {
-        if (!userId) return;
-        try {
-            const userRef = doc(db, "users", userId);
-            const snapshot = await getDoc(userRef);
-            const existingData = snapshot.exists() ? snapshot.data() : {};
-            await setDoc(userRef, {
-                ...existingData,
-                [type]: url
-            });
-        } catch (error) {
-            console.error("Error al guardar en Firestore:", error);
+  /* ---------- READ: cargar datos guardados ---------- */
+  useEffect(() => {
+    const fetchUserImages = async () => {
+      if (!userId) return;
+      try {
+        const docSnap = await getDoc(doc(db, "users", userId));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.foto) setProfileImage(data.foto);
+          if (data.fondo) setBackgroundImage(data.fondo);
         }
+      } catch (err) {
+        console.error("Error al obtener datos:", err);
+      }
     };
+    fetchUserImages();
+  }, []);
 
-    const openModal = (type) => {
-        setEditingType(type);
-        setModalVisible(true);
-        setTempUrl(type === "foto" ? profileImage : backgroundImage);
-    };
+  /* ---------- CREATE / UPDATE ---------- */
+  const saveImageToFirestore = async (type, url) => {
+    if (!userId) return;
+    try {
+      await setDoc(
+        doc(db, "users", userId),
+        { [type]: url },
+        { merge: true } // no pisa otros campos
+      );
+    } catch (err) {
+      console.error("Error al guardar:", err);
+    }
+  };
 
-    const saveImage = () => {
-        if (editingType === "foto") {
-            setProfileImage(tempUrl);
-            saveImageToFirestore("foto", tempUrl);
-        } else if (editingType === "fondo") {
-            setBackgroundImage(tempUrl);
-            saveImageToFirestore("fondo", tempUrl);
-        }
-        setModalVisible(false);
-        setTempUrl("");
-    };
+  /* ---------- DELETE ---------- */
+  const deleteImageFromFirestore = async (type) => {
+    if (!userId) return;
+    try {
+      await updateDoc(doc(db, "users", userId), { [type]: deleteField() });
+      // Limpia UI
+      if (type === "foto") setProfileImage("");
+      if (type === "fondo") setBackgroundImage("");
+    } catch (err) {
+      console.error("Error al eliminar:", err);
+    }
+  };
 
-    return (
-        <View style={profileInfoStyles.contenedor}>
-            <View style={profileInfoStyles.header}>
-                <View style={profileInfoStyles.fotosContainer}>
-                    <Image style={profileInfoStyles.fondo} source={{ uri: backgroundImage }} />
-                    <Image style={profileInfoStyles.foto} source={{ uri: profileImage }} />
-                </View>
-                <View style={profileInfoStyles.userInfoContainer}>
-                    <Text style={profileInfoStyles.usuario}>{usuario}</Text>
-                    <Text style={profileInfoStyles.email}>{correo}</Text>
-                </View>
-            </View>
+  const openModal = (type) => {
+    setEditingType(type);
+    setModalVisible(true);
+    setTempUrl(type === "foto" ? profileImage : backgroundImage);
+  };
 
-            {/* Botones para editar */}
-            <View style={profileInfoStyles.footer}>
-                <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("foto")}>
-                    <Text style={profileInfoStyles.txtbtn}>Editar Foto</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={profileInfoStyles.btnEditar} onPress={() => openModal("fondo")}>
-                    <Text style={profileInfoStyles.txtbtn}>Editar Fondo</Text>
-                </TouchableOpacity>
-            </View>
+  const saveImage = () => {
+    if (editingType === "foto") {
+      setProfileImage(tempUrl);
+      saveImageToFirestore("foto", tempUrl);
+    } else if (editingType === "fondo") {
+      setBackgroundImage(tempUrl);
+      saveImageToFirestore("fondo", tempUrl);
+    }
+    setModalVisible(false);
+    setTempUrl("");
+  };
 
-            {/* Modal para ingresar URL */}
-            <Modal visible={modalVisible} transparent={true} animationType="slide">
-                <View style={{
-                    flex: 1,
-                    backgroundColor: "rgba(0,0,0,0.6)",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    <View style={{
-                        width: 300,
-                        padding: 20,
-                        backgroundColor: "white",
-                        borderRadius: 10
-                    }}>
-                        <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 18 }}>
-                            Ingresa la URL de la {editingType === "foto" ? "foto" : "imagen de fondo"}
-                        </Text>
-                        <TextInput
-                            style={{
-                                borderWidth: 1,
-                                borderColor: "#ccc",
-                                borderRadius: 8,
-                                padding: 10,
-                                marginBottom: 15
-                            }}
-                            placeholder="https://..."
-                            value={tempUrl}
-                            onChangeText={setTempUrl}
-                        />
-                        <TouchableOpacity
-                            onPress={saveImage}
-                            style={{
-                                backgroundColor: "#ED1D24",
-                                padding: 10,
-                                borderRadius: 8,
-                                marginBottom: 10
-                            }}
-                        >
-                            <Text style={{ color: "white", textAlign: "center" }}>Guardar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setModalVisible(false)}
-                            style={{
-                                backgroundColor: "#ccc",
-                                padding: 10,
-                                borderRadius: 8
-                            }}
-                        >
-                            <Text style={{ textAlign: "center" }}>Cancelar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+  return (
+    <View style={profileInfoStyles.contenedor}>
+      {/* Header con imágenes */}
+      <View style={profileInfoStyles.header}>
+        <View style={profileInfoStyles.fotosContainer}>
+          <Image
+            style={profileInfoStyles.fondo}
+            source={{
+              uri:
+                backgroundImage ||
+                "https://via.placeholder.com/600x250/242121/FFFFFF?text=Sin+fondo",
+            }}
+          />
+          <Image
+            style={profileInfoStyles.foto}
+            source={{
+              uri:
+                profileImage ||
+                "https://via.placeholder.com/100/242121/FFFFFF?text=No+Foto",
+            }}
+          />
         </View>
-    );
+        <View style={profileInfoStyles.userInfoContainer}>
+          <Text style={profileInfoStyles.usuario}>{usuario}</Text>
+          <Text style={profileInfoStyles.email}>{correo}</Text>
+        </View>
+      </View>
+
+      {/* Footer con botones CRUD */}
+      <View style={profileInfoStyles.footer}>
+        {/* EDITAR */}
+        <TouchableOpacity
+          style={profileInfoStyles.btnEditar}
+          onPress={() => openModal("foto")}
+        >
+          <Text style={profileInfoStyles.txtbtn}>Editar Foto</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={profileInfoStyles.btnEditar}
+          onPress={() => openModal("fondo")}
+        >
+          <Text style={profileInfoStyles.txtbtn}>Editar Fondo</Text>
+        </TouchableOpacity>
+
+        {/* ELIMINAR */}
+        <TouchableOpacity
+          style={profileInfoStyles.btnEditar}
+          onPress={() => deleteImageFromFirestore("foto")}
+        >
+          <Text style={profileInfoStyles.txtbtn}>Eliminar Foto</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={profileInfoStyles.btnEditar}
+          onPress={() => deleteImageFromFirestore("fondo")}
+        >
+          <Text style={profileInfoStyles.txtbtn}>Eliminar Fondo</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 300,
+              padding: 20,
+              backgroundColor: "white",
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>
+              Ingresa la URL de la{" "}
+              {editingType === "foto" ? "foto" : "imagen de fondo"}
+            </Text>
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: "#ccc",
+                borderRadius: 8,
+                padding: 10,
+                marginBottom: 15,
+              }}
+              placeholder="https://..."
+              value={tempUrl}
+              onChangeText={setTempUrl}
+            />
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#ED1D24",
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 8,
+              }}
+              onPress={saveImage}
+            >
+              <Text style={{ color: "white", textAlign: "center" }}>Guardar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#ccc",
+                padding: 12,
+                borderRadius: 8,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ textAlign: "center" }}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
 }
 
-
 const profileInfoStyles = StyleSheet.create({
-    contenedor:{
-        gap:20
-    },
-    header:{
+  contenedor: { gap: 20},
+  header: {},
+  footer: { gap: 20, alignSelf: "center", marginTop:-50},
+  fotosContainer: {},
+  userInfoContainer: {
+    bottom: 40,
+    width: 340,
+    alignSelf: "center",
+  },
+  usuario: { fontSize: 45, fontWeight: "bold", color: "#ED1D24" },
+  email: { fontSize: 25, fontWeight: "bold", color: "white" },
+  fondo: { width: "100%", height: 250 },
+  foto: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    bottom: 50,
+    left: 10,
+  },
+  btnEditar: {
+    width: 340,
+    height: 60,
+    borderWidth: 1,
+    borderColor: "#929090",
+    justifyContent: "center",
+    borderRadius: 20,
+  },
+  txtbtn: { color: "#929090", textAlign: "center", fontSize: 20 },
+});
 
-    },
-    footer:{
-        gap:20,
-        alignSelf:"center"
-    },
-    fotosContainer:{
-    },
-    userInfoContainer:{
-        bottom:40,
-        width:340,
-        alignSelf:"center"
-    },
-    usuario:{
-        fontSize:45,
-        fontWeight:"bold",
-        color:"#ED1D24"
-    },
-    email:{
-        fontSize:25,
-        fontWeight:"bold",
-        color:"white"
-    },
-    fondo:{
-        width:"100%",
-        height:250
-    },
-    foto:{
-        width:100,
-        height:100,
-        borderRadius:100,
-        bottom:50,
-        left:10
-    },
-    btnEditar:{
-        width:340,
-        height:60,
-        borderWidth:1,
-        borderColor:"#929090",
-        justifyContent:"center",
-        borderRadius:20
-    },
-    txtbtn:{
-        color:"#929090",
-        textAlign:"center",
-        fontSize:20
-    }
-})
+
 
 function BtnCerrarSesion(){
     const navigation = useNavigation()
@@ -354,7 +280,7 @@ const btnLogout = StyleSheet.create({
         justifyContent:"center",
         borderRadius:20,
         alignSelf:"center",
-        marginTop:100
+        marginTop:10
     },
     texto:{
         fontSize:20,
