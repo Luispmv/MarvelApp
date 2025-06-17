@@ -74,15 +74,34 @@ function ProfileInfo({ fondo, foto, usuario, correo }) {
   /* ---------- DELETE ---------- */
   const deleteImageFromFirestore = async (type) => {
     if (!userId) return;
+  
     try {
-      await updateDoc(doc(db, "users", userId), { [type]: deleteField() });
+      const userRef = doc(db, "users", userId);
+      const docSnap = await getDoc(userRef);
+  
+      if (!docSnap.exists()) {
+        alert("Primero necesitas agregar una imagen antes de poder eliminarla.");
+        return;
+      }
+  
+      const data = docSnap.data();
+  
+      if (!data[type]) {
+        // alert(No hay ${type === "foto" ? "foto de perfil" : "imagen de fondo"} para eliminar.);
+          alert(`No hay ${type === "foto" ? "foto de perfil" : "imagen de fondo"} para eliminar.`);
+        return;
+      }
+  
+      await updateDoc(userRef, { [type]: deleteField() });
+  
       // Limpia UI
       if (type === "foto") setProfileImage("");
       if (type === "fondo") setBackgroundImage("");
     } catch (err) {
       console.error("Error al eliminar:", err);
+      alert("Ocurrió un error al intentar eliminar la imagen.");
     }
-  };
+  }; 
 
   const openModal = (type) => {
     setEditingType(type);
@@ -312,5 +331,5 @@ const btnbackStyles =  StyleSheet.create({
         left:12,
         top:20,
         padding:12
-    }
+    }
 })
