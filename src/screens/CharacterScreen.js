@@ -1,16 +1,16 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Text, View, StyleSheet, TouchableOpacity, Image} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView} from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function CharacterScreen(){
     const route = useRoute()
     const {characterUrl, characterName, powerstats} = route.params;
     return(
-        <View style={{backgroundColor:"#242121", height:1000}}>
+        <ScrollView style={{backgroundColor:"#242121", height:1000}}>
             <BtnBack></BtnBack>
             <CharacterCard url={characterUrl} nombreSuperheroe={characterName} />
             <Stats stats={powerstats}></Stats>
-        </View>
+        </ScrollView>
     )
 }
 
