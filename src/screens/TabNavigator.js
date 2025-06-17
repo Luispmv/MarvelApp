@@ -37,6 +37,11 @@ export default function TabNavigator() {
           else if (route.name === 'Comics') icon = 'book';
           return <Ionicons name={icon} size={size} color={color} />;
         },
+        tabBarStyle:{
+          backgroundColor:"black"
+        },
+        tabBarActiveTintColor: "#ED1D24",
+        tabBarInactiveTintColor:"white"
       })}
     >
       <Tab.Screen name="Inicio" component={TabMainStack} />
