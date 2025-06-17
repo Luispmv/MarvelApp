@@ -5,6 +5,24 @@ import ProfileScreen from './ProfileScreen';
 // import ComicScreen from './screens/ComicScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ComicScreen from './ComicScreen';
+import CharacterScreen from './CharacterScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+
+const Stack = createNativeStackNavigator();
+
+function TabMainStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="ComicScreen" component={ComicScreen} />
+      <Stack.Screen name="CharacterScreen" component={CharacterScreen} />
+      <Stack.Screen name='ProfileScreen' component={ProfileScreen}/>
+    </Stack.Navigator>
+  );
+}
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -21,8 +39,8 @@ export default function TabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Inicio" component={HomeScreen} />
-      <Tab.Screen name="Perfil" component={ProfileScreen} />
+      <Tab.Screen name="Inicio" component={TabMainStack} />
+      <Tab.Screen name="Perfil" component={ProfileScreen} /> 
     </Tab.Navigator>
   );
 }
