@@ -5,18 +5,26 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";  // linea recien añadida
 
+import { 
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID
+} from '@env';
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: "AIzaSyClppC94w2jLd6AnzBmx8jtkLiW_edlrIo",
-  authDomain: "fir-react-3ec54.firebaseapp.com",
-  projectId: "fir-react-3ec54",
-  // storageBucket: "fir-react-3ec54.firebasestorage.app",
-  storageBucket: "fir-react-3ec54.appspot.com",
-  messagingSenderId: "1011837157609",
-  appId: "1:1011837157609:web:af9949a15641ad9d76b078"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
