@@ -243,7 +243,8 @@ function BtnBack(){
     const navegacion = useNavigation()
     return(
         <TouchableOpacity style={btnbackStyles.contenedor} onPress={()=>{
-            navegacion.navigate("HomeScreen")
+            // navegacion.navigate("HomeScreen")
+            navegacion.replace("TabNavigator")
         }}>
             <Icon name="chevron-left" size={30} color="white" />
         </TouchableOpacity>

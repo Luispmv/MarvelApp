@@ -47,7 +47,8 @@ function FormularioRegistro(){
     useEffect(()=>{
         const unsubscribe = auth.onAuthStateChanged(user =>{
             if(user){
-                navegacion.replace("HomeScreen")
+                // navegacion.replace("HomeScreen")
+                navegacion.replace("TabNavigator")
             }
         })
 

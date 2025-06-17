@@ -5,6 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import ComicScreen from "../screens/ComicScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CharacterScreen from "../screens/CharacterScreen";
+import TabNavigator from "../screens/TabNavigator";
 
 const { createNativeStackNavigator } = require("@react-navigation/native-stack");
 
@@ -27,6 +28,8 @@ export default function MainStack(){
                 <Stack.Screen name="ProfileScreen" component={ProfileScreen}></Stack.Screen>
 
                 <Stack.Screen name="CharacterScreen" component={CharacterScreen}></Stack.Screen>
+
+                <Stack.Screen name="TabNavigator" component={TabNavigator} />
 
             </Stack.Navigator>
         </NavigationContainer>
