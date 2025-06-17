@@ -10,7 +10,7 @@ import { getFirestore } from "firebase/firestore";  // linea recien añadida
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: "AIzaSyClppC94w2jLd6AnzBmx8jtkLiW_edlrIo",
+  apiKey: "TUAPIKEY",
   authDomain: "fir-react-3ec54.firebaseapp.com",
   projectId: "fir-react-3ec54",
   // storageBucket: "fir-react-3ec54.firebasestorage.app",
