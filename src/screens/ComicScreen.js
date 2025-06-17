@@ -85,7 +85,6 @@ function Descripcion({descripcion}){
 
 const descripcionStyles = StyleSheet.create({
     contenedor:{
-        height:250,
         marginBottom:15
     },
     texto:{
